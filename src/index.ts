@@ -15,7 +15,7 @@ app.use("/api/v1", router);
 
 app.get("/", (req, res) => {
   res.json({
-    message: "Orbit Server is running",
+    message: "Orbit Server is running and Github Tested",
     port: PORT,
     status: "healthy",
     time: new Date().toLocaleString(),
