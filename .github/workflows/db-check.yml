@@ -1,0 +1,43 @@
+
+name: Database Connectivity Check
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  database-check:
+    name: Check Neon PostgreSQL
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check database connection
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          node --input-type=module -e '
+            import pg from "pg";
+            const pool = new pg.Pool({
+              connectionString: process.env.DATABASE_URL
+            });
+            try {
+              await pool.query("SELECT 1");
+              console.log("Neon PostgreSQL connection successful!");
+            } finally {
+              await pool.end();
+            }
+          '
