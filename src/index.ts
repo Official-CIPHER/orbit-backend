@@ -1,8 +1,8 @@
-import express from "express";
-import dotenv from "dotenv";
-import router from "./routes/routes.js";
+import "dotenv/config";
 
-dotenv.config();
+import express from "express";
+import router from "./routes/routes.js";
+import { connectionDB } from "./config/db.js";
 
 const app = express();
 
@@ -22,7 +22,20 @@ app.get("/", (req, res) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port : ${PORT}`);
-  console.log(`http://localhost:${PORT}`);
-});
+// Database Connection and Server Start
+async function startServer() {
+  try {
+    await connectionDB();
+
+    app.listen(PORT, () => {
+      console.log(`Server is running on port : ${PORT}`);
+      console.log(`http://localhost:${PORT}`);
+    });
+  } catch (error) {
+    console.error("Failed to start the server:", error);
+    process.exitCode = 1; // Set exit code to indicate failure
+  }
+}
+
+
+startServer();
